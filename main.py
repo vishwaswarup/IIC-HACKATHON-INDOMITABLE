@@ -54,7 +54,25 @@ def process_climate_reports():
     joblib.dump(nlp_model, 'models/nlp_model.pkl')
     return reports, vectorizer, nlp_model
 
-# Step 4: Integrate ML and NLP for Insights
+# Step 4: Data Prioritization Based on Danger Level
+def prioritize_data(input_data):
+    # Danger score logic:
+    danger_score = 0
+    if input_data['soil_moisture'] < 0.3:
+        danger_score += 50  # High risk if soil moisture is low (drought)
+    if abs(input_data['ice_sheet_change']) > 2.0:
+        danger_score += 40  # High risk if ice sheet change is significant
+    if input_data['forest_cover'] < 30:
+        danger_score += 30  # High risk if forest cover is low (flood risk)
+    
+    # If danger score is above a threshold, trigger an immediate alert
+    if danger_score >= 70:
+        print("ALERT: Critical Climate Event Detected! Immediate Attention Required!")
+        return True  # Indicates the data needs immediate reporting
+    
+    return False  # No immediate alert needed
+
+# Step 5: Integrate ML and NLP for Insights
 def generate_insights(input_data):
     clf = joblib.load('models/climate_model.pkl')
     nlp_model = joblib.load('models/nlp_model.pkl')
@@ -90,9 +108,14 @@ if __name__ == "__main__":
     reports, vectorizer, nlp_model = process_climate_reports()
     
     example_input = {
-        'soil_moisture': 0.3,
-        'ice_sheet_change': -2.0,
-        'forest_cover': 45.0
+        'soil_moisture': 0.2,
+        'ice_sheet_change': -2.5,
+        'forest_cover': 25.0
     }
-    insight = generate_insights(example_input)
-    print("Generated Insight:\n", insight)
+    
+    # Step 6: Prioritize Data and Generate Insights
+    is_critical = prioritize_data(example_input)
+    
+    if not is_critical:
+        insight = generate_insights(example_input)
+        print("Generated Insight:\n", insight)
