@@ -19,3 +19,8 @@ This project integrates Machine Learning (ML) and Natural Language Processing (N
    ```bash
    git clone <repo-link>
    cd nisar-ai-project
+2. Install dependencies:
+   pip install -r requirements.txt
+3. Run the main script:
+   python main.py
+   
